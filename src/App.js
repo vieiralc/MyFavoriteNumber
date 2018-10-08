@@ -25,13 +25,24 @@ const metaMaskNotInstalled = (
   </div>
 )
 
+const wrongNetwork = (
+  <div style={{marginTop: '25px'}} className="container">
+    <div className="row justify-content-center">
+      <div className="col-md-8">
+        <h1>Please login on ethereum mainnet</h1>
+      </div>
+    </div>
+  </div>
+)
+
 class App extends Component {
 
   constructor() {
     super()
 
     this.state = {
-      isInstalled: false,
+      isConnected: false,
+      wrongNetwork: false,
       currentNumber: '',
       currentPrice: '',
       newNumber: '',
@@ -39,42 +50,59 @@ class App extends Component {
       show: false,
     }
 
-    this.web3 = ''
-    this.contract = ''
-    this.infuraContract = ''
+    if (typeof window.web3 !== 'undefined')
+      this.web3 = new Web3(window.web3.currentProvider)
+    //else
+      //this.web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/dc6b700a39d540469573d509928ceb46'))
 
+    this.contract = ''
     this.onChange = this.onChange.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
     this.handleDismiss = this.handleDismiss.bind(this)
     this.handleShow = this.handleShow.bind(this)
   }
 
-  componentDidMount() {
-    if (window.web3) {      
-      
-      this.web3 = new Web3(window.web3.currentProvider)
-      
-      if (this.web3.eth.accounts.length > 0) {
-        this.setState({isInstalled: true})
-        this.web3.eth.defaultAccount = this.web3.eth.accounts[0]
+  componentWillMount() {
+    if (this.web3 && this.web3.isConnected() && this.web3.eth.accounts.length > 0) {
 
-        this.infuraWeb3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/dc6b700a39d540469573d509928ceb46'))
+      if (this.web3.version.getNetwork !== '1') {
 
-        this.contract = this.web3.eth.contract(ABI).at(address)
-        this.infuraContract = this.infuraWeb3.eth.contract(ABI).at(address)
-
-        this.contract.number((err, res) => {
-          if (err)
-            this.setState({currentNumber: 'Unavailable'})
-          
-          this.setState({currentNumber: res.toNumber()})
-        })
-        
-        this.setState({
-          currentPrice: this.web3.fromWei(this.infuraContract.price().toNumber(), "ether")
-        })
       }
+
+      this.setState({isConnected: true})
+      this.contract = this.web3.eth.contract(ABI).at(address)
+      this.web3.eth.defaultAccount = this.web3.eth.accounts[0]
+
+      this.getCurrentNumber()
+      this.getCurrentPrice()
+
+      this.contract.newNumber().watch((err, res) => {
+        if (!err) {
+          this.setState({currentNumber: res.args._number.toNumber()})
+          this.getCurrentPrice()
+        }
+        
+        document.getElementById("overlay").style.display = "none"
+        this.setState({loading: false})
+      })
     }
+  }
+
+  getCurrentNumber() {
+    this.contract.number((err, res) => {
+      if (err)
+        this.setState({currentNumber: 'Unavailable'})
+      
+      this.setState({currentNumber: res.toNumber()})
+    })
+  }
+
+  getCurrentPrice() {
+    this.contract.price((err, res) => {
+      if (err)
+        this.setState({currentPrice: 'Unavailable'})
+      this.setState({currentPrice: this.web3.fromWei(res.toNumber(), "ether")})
+    })
   }
 
   onChange(e) {
@@ -94,18 +122,11 @@ class App extends Component {
           this.setState({loading: false})
           document.getElementById("overlay").style.display = "none"
           this.handleShow()
-        } else 
-          console.log(res)
-      })
+        }
+      }
+    )
     
     this.setState({newNumber: ''})
-    this.contract.newNumber().watch((err, res) => {
-      if (!err)
-        this.setState({currentNumber: res.args._number.toNumber()})
-      
-      document.getElementById("overlay").style.display = "none"
-      this.setState({loading: false})
-    })
   }
 
   handleShow() {
@@ -118,7 +139,10 @@ class App extends Component {
 
   render() {
     
-    return !this.state.isInstalled ? metaMaskNotInstalled : (
+    if (!this.state.isConnected) {
+      return metaMaskNotInstalled
+    } else if (!this.state.wrongNetwork)
+    return !this.state.isConnected ? metaMaskNotInstalled : (
       <header>
         <div className="sun"></div>
         <div className="cloud c1"></div>
