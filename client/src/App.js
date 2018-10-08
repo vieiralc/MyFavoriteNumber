@@ -1,7 +1,16 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import Web3 from 'web3'
 import ABI from './contract/ABI.json'
-import './app.css'
+import { DotLoader } from 'react-spinners'
+import { css } from 'react-emotion'
+import { Alert, Button } from 'react-bootstrap'
+import './App.css'
+
+const override = css`
+    display: block;
+    margin: 0 auto;
+    border-color: red;
+`
 
 const address = '0xb86CE7CE17E82eF7cab5ed8a86B736A494fE3935'
 
@@ -25,7 +34,9 @@ class App extends Component {
       isInstalled: false,
       currentNumber: '',
       currentPrice: '',
-      newNumber: ''
+      newNumber: '',
+      loading: false,
+      show: false,
     }
 
     this.web3 = ''
@@ -34,6 +45,8 @@ class App extends Component {
 
     this.onChange = this.onChange.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
+    this.handleDismiss = this.handleDismiss.bind(this)
+    this.handleShow = this.handleShow.bind(this)
   }
 
   componentDidMount() {
@@ -70,13 +83,37 @@ class App extends Component {
 
   onSubmit(e) {
     e.preventDefault()
+    document.getElementById("overlay").style.display = "block"
+    this.setState({loading: true})
+
     let currentPriceinWei = this.web3.toWei(this.state.currentPrice, "ether")
-    console.log(currentPriceinWei)
+    
     this.contract.setNumber(this.state.newNumber, 
       {from: this.web3.eth.defaultAccount, value:  currentPriceinWei, gas: 300000}, (err, res) => {
-        if (err)
-          console.log(err)
+        if (err && this.state.loading) {
+          this.setState({loading: false})
+          document.getElementById("overlay").style.display = "none"
+          this.handleShow()
+        } else 
+          console.log(res)
       })
+    
+    this.setState({newNumber: ''})
+    this.contract.newNumber().watch((err, res) => {
+      if (!err)
+        this.setState({currentNumber: res.args._number.toNumber()})
+      
+      document.getElementById("overlay").style.display = "none"
+      this.setState({loading: false})
+    })
+  }
+
+  handleShow() {
+    this.setState({ show: true })
+  }
+
+  handleDismiss() {
+    this.setState({ show: false })
   }
 
   render() {
@@ -99,6 +136,37 @@ class App extends Component {
           <div className="block">
             <div className="row justify-content-center">
               <div className="col-md-4">
+                <div id="overlay">
+                  <div id="text">
+                    <span style={{fontSize: '16px', fontFamily: 'Cursive'}}>Transactions on blockchain might take a while
+                    Please wait...</span>
+                    <DotLoader
+                      className={override}
+                      loading={this.state.loading}
+                      color={'#fff'}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="row justify-content-center">
+              <div className="col-md-4">
+                {
+                  this.state.show ?
+                    (
+                      <Alert bsStyle="danger" onDismiss={this.handleDismiss}>
+                        <h4>Oh snap! You got an error!</h4>
+                        <p>Change this and that and try again.</p>
+                        <p><Button className='btn btn-info btn-block mt-4' onClick={this.handleDismiss}>Hide Alert</Button></p>
+                      </Alert>
+                    ) : ''
+                }
+              </div>
+            </div>
+
+            <div className="row justify-content-center">
+              <div className="col-md-4">
                 <form onSubmit={this.onSubmit}>
                   <div className="form-group">
                     <label htmlFor="number"></label>
@@ -109,7 +177,7 @@ class App extends Component {
                       min="0" 
                       className="form-control" 
                       id="number" 
-                      placeholder="Type your favorite number"
+                      placeholder="Type your number"
                     />
                     <small id="number" style={{fontSize: '11px'}} className="form-text text-muted">Your number is now safe.</small>
                   </div>
