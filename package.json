@@ -1,0 +1,24 @@
+{
+  "name": "myfavoritenumber",
+  "version": "1.0.0",
+  "description": "playing around with ethereum mainnet",
+  "main": "./client/src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "predeploy": "cd client && npm start",
+    "deploy": "gh-pages -d client"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vieiralc/MyFavoriteNumber.git"
+  },
+  "author": "Lucas Vieira",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vieiralc/MyFavoriteNumber/issues"
+  },
+  "homepage": "https://github.com/vieiralc/MyFavoriteNumber",
+  "dependencies": {
+    "gh-pages": "^2.0.1"
+  }
+}
