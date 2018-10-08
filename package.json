@@ -1,24 +1,29 @@
 {
-  "name": "myfavoritenumber",
-  "version": "1.0.0",
-  "description": "playing around with ethereum mainnet",
-  "main": "./client/src/index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "predeploy": "cd client && npm start",
-    "deploy": "gh-pages -d client"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/vieiralc/MyFavoriteNumber.git"
-  },
-  "author": "Lucas Vieira",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/vieiralc/MyFavoriteNumber/issues"
-  },
-  "homepage": "https://github.com/vieiralc/MyFavoriteNumber",
+  "name": "client",
+  "version": "0.1.0",
+  "private": true,
   "dependencies": {
-    "gh-pages": "^2.0.1"
-  }
+    "react": "^16.5.2",
+    "react-bootstrap": "^0.32.4",
+    "react-dom": "^16.5.2",
+    "react-emotion": "^9.2.12",
+    "react-scripts": "2.0.4",
+    "react-spinners": "^0.4.5",
+    "web3": "^0.20.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }

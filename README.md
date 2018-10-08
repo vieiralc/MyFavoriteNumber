@@ -1,4 +1,4 @@
-# MyFavoriteNumber
+﻿# MyFavoriteNumber
 Playing around with solidity and ethereum main net
 
 ### Web3js instructions
