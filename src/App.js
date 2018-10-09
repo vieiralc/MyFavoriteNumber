@@ -42,7 +42,7 @@ class App extends Component {
 
     this.state = {
       isConnected: false,
-      wrongNetwork: false,
+      correctNetwork: false,
       currentNumber: '',
       currentPrice: '',
       newNumber: '',
@@ -55,6 +55,10 @@ class App extends Component {
     //else
       //this.web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/dc6b700a39d540469573d509928ceb46'))
 
+    this.web3.version.getNetwork((err, res) => res === '1' ? this.setState({
+      correctNetwork: true
+    }): '')
+    
     this.contract = ''
     this.onChange = this.onChange.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
@@ -64,11 +68,7 @@ class App extends Component {
 
   componentWillMount() {
     if (this.web3 && this.web3.isConnected() && this.web3.eth.accounts.length > 0) {
-
-      if (this.web3.version.getNetwork !== '1') {
-
-      }
-
+      
       this.setState({isConnected: true})
       this.contract = this.web3.eth.contract(ABI).at(address)
       this.web3.eth.defaultAccount = this.web3.eth.accounts[0]
@@ -139,10 +139,12 @@ class App extends Component {
 
   render() {
     
-    if (!this.state.isConnected) {
+    if (!this.state.isConnected)
       return metaMaskNotInstalled
-    } else if (!this.state.wrongNetwork)
-    return !this.state.isConnected ? metaMaskNotInstalled : (
+    else if (!this.state.correctNetwork)
+      return wrongNetwork
+    else
+    return (
       <header>
         <div className="sun"></div>
         <div className="cloud c1"></div>
