@@ -16,11 +16,11 @@ module.exports = {
       gas: 3000000,
       gasPrice: 21
     },
-    main: {
+    mainnet: {
       provider: () => new HDWalletProvider(process.env.MNENOMIC, "https://mainnet.infura.io/v3/" + process.env.apiKey),
       network_id: 1,
-      gas: 3000000,
-      gasPrice: 21
+      gas: 5000000,
+      gasPrice: 25000000000
     }
   },
 
