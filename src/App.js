@@ -55,7 +55,7 @@ class App extends Component {
     //else
       //this.web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/dc6b700a39d540469573d509928ceb46'))
 
-    this.web3.version.getNetwork((err, res) => res === '1' ? this.setState({
+    this.web3.version.getNetwork((err, res) => res === '3' ? this.setState({
       correctNetwork: true
     }): '')
     
