@@ -18,7 +18,7 @@ const metaMaskNotInstalled = (
   <div style={{marginTop: '25px'}} className="container">
     <div className="row justify-content-center">
       <div className="col-md-8">
-        <h1>Please install MetaMask or log in ir order to use this website</h1>
+        <h1>Please install MetaMask or login in order to use this website</h1>
         <a href="https://metamask.io/" target="blank">Click here to install</a>
       </div>
     </div>
@@ -29,7 +29,7 @@ const wrongNetwork = (
   <div style={{marginTop: '25px'}} className="container">
     <div className="row justify-content-center">
       <div className="col-md-8">
-        <h1>Please login on ethereum mainnet</h1>
+        <h1>Please login on ropsten test net</h1>
       </div>
     </div>
   </div>
@@ -55,10 +55,6 @@ class App extends Component {
     //else
       //this.web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/dc6b700a39d540469573d509928ceb46'))
 
-    this.web3.version.getNetwork((err, res) => res === '3' ? this.setState({
-      correctNetwork: true
-    }): '')
-    
     this.contract = ''
     this.onChange = this.onChange.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
@@ -67,6 +63,12 @@ class App extends Component {
   }
 
   componentWillMount() {
+    this.web3.version.getNetwork((err, netId) => {
+      if (netId === '3') {
+        this.setState({correctNetwork: true})
+      }
+    })
+
     if (this.web3 && this.web3.isConnected() && this.web3.eth.accounts.length > 0) {
       
       this.setState({isConnected: true})
@@ -139,90 +141,90 @@ class App extends Component {
 
   render() {
     
-    if (!this.state.isConnected)
-      return metaMaskNotInstalled
-    else if (!this.state.correctNetwork)
-      return wrongNetwork
-    else
-    return (
-      <header>
-        <div className="sun"></div>
-        <div className="cloud c1"></div>
-        <div className="cloud c2"></div>
-        <div className="cloud c3"></div>
-        <div className="cloud c4"></div>
-        <div className="cloud c5"></div>
-        <div className="day"></div>  
-        <div className="moon"></div>          
-        <div className="horizon"></div>      
+    if (this.state.isConnected && this.state.correctNetwork) {
+      return (
+        <header>
+          <div className="sun"></div>
+          <div className="cloud c1"></div>
+          <div className="cloud c2"></div>
+          <div className="cloud c3"></div>
+          <div className="cloud c4"></div>
+          <div className="cloud c5"></div>
+          <div className="day"></div>  
+          <div className="moon"></div>          
+          <div className="horizon"></div>      
 
-        <div className="walk"></div>
-        
-        <h1>
-          <div className="block">
-            <div className="row justify-content-center">
-              <div className="col-md-4">
-                <div id="overlay">
-                  <div id="text">
-                    <span style={{fontSize: '16px', fontFamily: 'Cursive'}}>Transactions on blockchain might take a while
-                    Please wait...</span>
-                    <DotLoader
-                      className={override}
-                      loading={this.state.loading}
-                      color={'#fff'}
-                    />
+          <div className="walk"></div>
+          
+          <h1>
+            <div className="block">
+              <div className="row justify-content-center">
+                <div className="col-md-4">
+                  <div id="overlay">
+                    <div id="text">
+                      <span style={{fontSize: '16px', fontFamily: 'Cursive'}}>Transactions on blockchain might take a while
+                      Please wait...</span>
+                      <DotLoader
+                        className={override}
+                        loading={this.state.loading}
+                        color={'#fff'}
+                      />
+                    </div>
                   </div>
+                </div>
+              </div>
+
+              <div className="row justify-content-center">
+                <div className="col-md-4">
+                  {
+                    this.state.show ?
+                      (
+                        <Alert bsStyle="danger" onDismiss={this.handleDismiss}>
+                          <h4>Oh snap! You got an error!</h4>
+                          <p>Change this and that and try again.</p>
+                          <p><Button className='btn btn-info btn-block mt-4' onClick={this.handleDismiss}>Hide Alert</Button></p>
+                        </Alert>
+                      ) : ''
+                  }
+                </div>
+              </div>
+
+              <div className="row justify-content-center">
+                <div className="col-md-4">
+                  <form onSubmit={this.onSubmit}>
+                    <div className="form-group">
+                      <label htmlFor="number"></label>
+                      <input 
+                        value={this.state.newNumber}
+                        onChange={this.onChange}
+                        type="number" 
+                        min="0" 
+                        className="form-control" 
+                        id="number" 
+                        placeholder="Type your number"
+                      />
+                      <small id="number" style={{fontSize: '11px'}} className="form-text text-muted">Your number is now safe.</small>
+                    </div>
+                
+                    <button type="submit" className="btn btn-info btn-block">Save!</button>
+                  </form>
+                  <div style={{fontSize: '16px', fontFamily: 'cursive'}}>Current Number: &nbsp;  {this.state.currentNumber}</div>
+                  <div style={{fontSize: '10px', fontFamily: 'cursive', marginTop: '5px'}} >Current Price: &nbsp; {this.state.currentPrice} ETH</div>
                 </div>
               </div>
             </div>
 
             <div className="row justify-content-center">
-              <div className="col-md-4">
-                {
-                  this.state.show ?
-                    (
-                      <Alert bsStyle="danger" onDismiss={this.handleDismiss}>
-                        <h4>Oh snap! You got an error!</h4>
-                        <p>Change this and that and try again.</p>
-                        <p><Button className='btn btn-info btn-block mt-4' onClick={this.handleDismiss}>Hide Alert</Button></p>
-                      </Alert>
-                    ) : ''
-                }
-              </div>
+              <span style={{fontSize: '14px', marginTop: '25px', fontFamily: 'cursive'}}>Save your favorite number on ethereum blockchain!</span>
             </div>
+          </h1>
+        </header>
 
-            <div className="row justify-content-center">
-              <div className="col-md-4">
-                <form onSubmit={this.onSubmit}>
-                  <div className="form-group">
-                    <label htmlFor="number"></label>
-                    <input 
-                      value={this.state.newNumber}
-                      onChange={this.onChange}
-                      type="number" 
-                      min="0" 
-                      className="form-control" 
-                      id="number" 
-                      placeholder="Type your number"
-                    />
-                    <small id="number" style={{fontSize: '11px'}} className="form-text text-muted">Your number is now safe.</small>
-                  </div>
-              
-                  <button type="submit" className="btn btn-info btn-block">Save!</button>
-                </form>
-                <div style={{fontSize: '16px', fontFamily: 'cursive'}}>Current Number: &nbsp;  {this.state.currentNumber}</div>
-                <div style={{fontSize: '10px', fontFamily: 'cursive', marginTop: '5px'}} >Current Price: &nbsp; {this.state.currentPrice} ETH</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="row justify-content-center">
-            <span style={{fontSize: '14px', marginTop: '25px', fontFamily: 'cursive'}}>Save your favorite number on ethereum blockchain!</span>
-          </div>
-        </h1>
-      </header>
-
-    )
+      )
+    } else if (!this.state.isConnected)
+      return metaMaskNotInstalled
+    else if (!this.state.correctNetwork)
+      return wrongNetwork
   }
 }
 
