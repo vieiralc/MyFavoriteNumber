@@ -1,5 +1,5 @@
 ﻿# MyFavoriteNumber
-Playing around with solidity and ethereum main net
+Playing around with solidity and ethereum ropsten test net
 
 ### Web3js instructions
 
