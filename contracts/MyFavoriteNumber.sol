@@ -9,7 +9,7 @@ contract MyFavoriteNumber {
     }
     
     modifier onlyOwner() {
-        require(msg.sender == owner);
+        require(msg.sender == owner, "only owner");
         _;
     }
     
@@ -18,7 +18,7 @@ contract MyFavoriteNumber {
     uint public number = 0;
     
     function setNumber(uint _number) public payable {
-        require(msg.value >= price);
+        require(msg.value >= price, "not nough founds");
         
         number = _number;
         price *= 2;
